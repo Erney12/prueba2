@@ -1,22 +1,12 @@
-import sqlite3
+from flask import Flask, jsonify
 
-conn= sqlite3.connect("tabla_estudiantes.db")
-cursor= conn.cursor()
+app= Flask(__name__)
 
-cursor.execute("""CREATE TABLE estudiantes(
-            nombre TEXT,
-            edad INTEGER,
-            estatura REAL
-    )""")
 
-cursor.execute("""INSERT INTO estudiantes VALUES("mark", 27, 1.9)""")
+@app.route("/", methods=["GET"])
+def ping():
+    return jsonify({"mensaje":"hello world"})
 
-list_estudiantes=[
-    ("jhon", 21, 1.8),
-    ("david", 35, 1.7),
-    ("michael", 19, 1.73)
-    ]
-cursor.executemany("INSERT INTO estudiantes VALUES(?, ?, ?)", list_estudiantes)
 
-conn.commit()
-conn.close
+if __name__== "__main__":
+    app.run(debug=True, port=4000)
