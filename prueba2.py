@@ -19,4 +19,4 @@ list_estudiantes=[
 cursor.executemany("INSERT INTO estudiantes VALUES(?, ?, ?)", list_estudiantes)
 
 conn.commit()
-conn.closes
+conn.close
