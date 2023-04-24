@@ -59,12 +59,15 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine, text
 import sqlalchemy
+
 Conexión a la base de datos postgres:
+
 database = 'postgres'
 user = 'postgres'
 password = 'postgres'
 host = '10.5.3.99'
 port = '5432'
+
 database_uri = f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}'
 psql_engine = sqlalchemy.create_engine(database_uri)
 Definición de funciones 
@@ -74,11 +77,13 @@ def psql_2_df(query):
     return df
 
 Df_2_psql: esta función se encarga de escribir los datos de un dataframe en una tabla de postgres, creándola si esta no existe y adicionando los datos si ya existe. Principalmente se la utilizara para actualizar los datos de las tablas fc_dtch y dm_carril
+
 def df_2_psql(df,table_name):
     df.to_sql(table_name, psql_engine, if_exists='append', index=False)
     psql_engine.dispose()
 
 Limpiar_psql:  esta función se la utiliza para finalizar todas las conexiones de backend a la base de datos "postgres", excepto la conexión actual que está ejecutando la consulta
+
  def limpiar_psql():
     query = "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM  pg_stat_activity WHERE pg_stat_activity.datname = 'postgres' AND pid <> pg_backend_pid()"
     df = psql_2_df(query)
@@ -86,6 +91,7 @@ Limpiar_psql:  esta función se la utiliza para finalizar todas las conexiones d
 
 
 Update_dim: esta función se encarga de actualizar la dimensión de la tabla (carril) en caso de que existan carriles no agregados
+
 def update_dim(dim_table_name):
     try:
         query = "select distinct carril, carril_nombre from stn_dtch "\
@@ -99,6 +105,7 @@ def update_dim(dim_table_name):
 
 
 Atípicos: esta función se encarga de sacar y analizar los datos atípicos como ausencia de intensidad y velocidad 0 de un dataframe
+
 def atipicos(df1):
     #query_0 = 'SELECT carril, carril_nombre, fecha, intensidad, velocidad FROM stn_dtch '\
     #    +'where carril = ' +"'" +str(carril) + "'"
@@ -172,6 +179,7 @@ def main():
             dfo = atipicos(df1)
             df_2_psql(dfo,"fc_dtch")
             print("cargados ", len(dfo), " registros del carril: ", str(carril))
+
 
 
 
